@@ -86,7 +86,7 @@ The plugin will be automatically translated into your Steam client's language.
 | Platform | Action |
 |----------|----------|
 | ⭐ GitHub | Star the repository |
-| 🐞 Bug Reports | Report bugs through [GitHub](https://github.com/SaiyajinK/Easy-Restart-Reload-for-Steam/issues) or [Discord](https://discord.com/channels/1367109896419676203/1379085575893815367) |
+| 🐞 Bug Reports | Report bugs through [GitHub](https://github.com/SaiyajinK/Achievement-Translator-for-Steam/issues) or [Discord](https://discord.com/channels/1367109896419676203/1379085575893815367) |
 | ☕ Ko-fi | Support the project on [Ko-fi](https://ko-fi.com/saiyajink) |
 
 <p align="center">
