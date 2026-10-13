@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "ESNext", "target": "ES2020", "jsx": "react-jsx", "moduleResolution": "node",
+    "strict": true, "noEmit": true, "esModuleInterop": true, "skipLibCheck": true,
+    "typeRoots": [".millennium/types", "node_modules/@types"],
+    "paths": { "millennium": ["./.millennium/lsp/ts"] }
+  },
+  "include": ["frontend/**/*", ".millennium/**/*.d.ts"]
+}
