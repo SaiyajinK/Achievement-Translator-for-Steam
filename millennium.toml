@@ -1,5 +1,5 @@
 [plugin]
-id = "com.saiyajink.achievementtranslator"
+id = "achievement-translator"
 name = "Achievement Translator"
 version = "1.0.0"
 author = "SaiyajinK"
