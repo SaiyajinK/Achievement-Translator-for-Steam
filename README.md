@@ -60,8 +60,9 @@ The plugin will be automatically translated into your Steam client's language.
 
 ### 📸 Preview :
 
-| <img width="647" height="387" alt="explorer_jVkRxbARYH" src="https://github.com/user-attachments/assets/439f5e20-c5dd-439e-90b2-9621de800efe" /> |
+| <img width="756" height="627" alt="steamwebhelper_5fDS5trUfT" src="https://github.com/user-attachments/assets/551d28b7-5f9e-41d9-8122-16e8a4a113e5" /> |
 | ------ |
+
 
 <p align="center">
   <img width="700" height="1" src="https://via.placeholder.com/700x1/262626/262626">
@@ -73,7 +74,7 @@ The plugin will be automatically translated into your Steam client's language.
 |--------|--------|
 | 1️⃣ | Download the latest release [here](https://github.com/SaiyajinK/Achievement-Translator-for-Steam/releases) |
 | 2️⃣ | Navigate to `C:\Program Files (x86)\Steam\millennium\plugins\` |
-| 3️⃣ | Extract and copy the `com.saiyajink.achievementtranslator.star` file into the `plugins` directory |
+| 3️⃣ | Extract and copy the `achievement-translator.star` file into the `plugins` directory |
 | 4️⃣ | Restart Steam |
 | 5️⃣ | Enable the plugin from the Millennium settings |
 
