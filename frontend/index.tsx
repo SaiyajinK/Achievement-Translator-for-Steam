@@ -40,7 +40,7 @@ export default definePlugin(() => {
   // Capture the actual in-game overlay document from its mounted React tree.
   // The existing DOM monitoring remains for the library achievement popup.
   installAchievementOverlayReactHook();
-  void startAchievementTranslator();
+  void startAchievementTranslator(true);
 
   return {
     title: 'Achievement Translator',

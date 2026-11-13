@@ -42,9 +42,9 @@ function gameAppId(tabs: TabDescriptor[]): string {
   return '';
 }
 
-const wrapperCache = new WeakMap<object, (props: TabsProps) => unknown>();
+const wrapperCache = new Map<object | string, (props: TabsProps) => unknown>();
 
-function createWrapper(original: object, react: ReactFactory): (props: TabsProps) => unknown {
+function createWrapper(original: object | string, react: ReactFactory): (props: TabsProps) => unknown {
   const existing = wrapperCache.get(original);
   if (existing) return existing;
 
@@ -97,8 +97,13 @@ export function installAchievementOverlayReactHook(): void {
 
   const intercept = (args: JsxArgs): void => {
     try {
-      if (!isInGameAchievementsTabs(args[1])) return;
-      const type = args[0];
+      const [type, props] = args;
+      const classes = typeof props?.className === 'string' ? props.className.split(/\s+/) : [];
+      if (type === 'div' && classes.includes('OverlayPopup') && classes.includes('Achievements')) {
+        args[0] = createWrapper(type, react);
+        return;
+      }
+      if (!isInGameAchievementsTabs(props)) return;
       if ((typeof type !== 'function' && (typeof type !== 'object' || type === null))) return;
       // The patch replaces the component type, NOT Steam's tab descriptors.
       args[0] = createWrapper(type, react);
