@@ -45,6 +45,7 @@ function createAchievementTranslator() {
   // FocusNavController does not expose this popup on all Steam builds.
   const REACT_OVERLAY_APPIDS = new WeakMap<Document, string>();
   let mountedOverlayDocument: Document | null = null;
+  let overlayMountVersion = 0;
 
   let allowModernPopup = false;
   let activeDocument: Document | null = null;
@@ -97,13 +98,14 @@ function createAchievementTranslator() {
     }
     const panel = overlay()?.querySelector<HTMLElement>('[class~="AchievementsPage"] [class~="DesktopPanel"]');
     const filter = panel?.querySelector<HTMLElement>('[role="combobox"]');
-    if (!panel || !filter) return null;
+    const fallback = popup?.querySelector<HTMLElement>('.AchievementsTable') ?? null;
+    if (!panel || !filter) return fallback;
 
     const firstSwitch = panel.querySelector('[role="switch"]');
     const table = overlay()?.querySelector('[class~="AchievementsTable"]');
     let toolbar: HTMLElement | null = filter.parentElement;
     while (toolbar && toolbar !== panel) {
-      if (table && toolbar.contains(table)) return null;
+      if (table && toolbar.contains(table)) return fallback;
       const matchesToolbar = firstSwitch
         ? toolbar.contains(firstSwitch)
         : toolbar.style.getPropertyValue('--justify').trim() === 'space-between';
@@ -119,7 +121,7 @@ function createAchievementTranslator() {
       }
       toolbar = toolbar.parentElement;
     }
-    return null;
+    return fallback;
   }
   function placeModernButton(): void {
     if (!activeDocument || !button) return;
@@ -273,9 +275,10 @@ function createAchievementTranslator() {
     button.title = reason || button.dataset.translationError || label;
     button.setAttribute('aria-label', label);
     const caption = button.querySelector('span');
-    if (caption) caption.textContent = inProgress
+    const captionText = inProgress
       ? `${language ? buttonLabel(language) : label} (${progressTotal ? `${progressDone}/${progressTotal}` : '…'})`
       : label;
+    if (caption && caption.textContent !== captionText) caption.textContent = captionText;
     button.dataset.busy = inProgress ? 'yes' : 'no';
   }
   function alignGameOverlayTabs(): void {
@@ -910,6 +913,7 @@ function createAchievementTranslator() {
     if (!doc?.body?.classList?.contains('OverlayPopupBody')) return;
     if (id) REACT_OVERLAY_APPIDS.set(doc, id);
     else REACT_OVERLAY_APPIDS.delete(doc);
+    ++overlayMountVersion;
     mountedOverlayDocument = doc;
     attach(doc);
     console.debug('[Achievement Translator] React overlay connected, AppID:', id);
@@ -918,24 +922,28 @@ function createAchievementTranslator() {
   /** Never keep a detached popup pinned after its React tree unmounts. */
   function unregisterReactOverlayDocument(doc: Document): void {
     if (mountedOverlayDocument !== doc) return;
-    mountedOverlayDocument = null;
-    observer?.disconnect();
-    observer = null;
-    if (refreshTimer) clearTimeout(refreshTimer);
-    refreshTimer = null;
-    if (button?.parentElement?.id === MODERN_BUTTON_ROW_ID) button.parentElement.remove();
-    button?.remove();
-    button = null;
-    activeDocument = null;
-    activeGame = '';
-    activeTab = null;
-    ++detectionVersion;
+    const version = overlayMountVersion;
+    queueMicrotask(() => {
+      if (version !== overlayMountVersion || mountedOverlayDocument !== doc) return;
+      mountedOverlayDocument = null;
+      observer?.disconnect();
+      observer = null;
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = null;
+      if (button?.parentElement?.id === MODERN_BUTTON_ROW_ID) button.parentElement.remove();
+      button?.remove();
+      button = null;
+      activeDocument = null;
+      activeGame = '';
+      activeTab = null;
+      ++detectionVersion;
+    });
   }
 
   function findDocument(): Document | null {
     const isAchievementsPopup = (doc: Document): boolean => {
       const body = doc.querySelector(GAME_OVERLAY_SELECTOR);
-      return !!body && (!!modernAchievements(doc) || !!body.querySelector(TAB_ROW_SELECTOR + ' [role="tab"]'));
+      return !!body && (!!body.querySelector('.OverlayPopup.Achievements') || !!body.querySelector(TAB_ROW_SELECTOR + ' [role="tab"]'));
     };
     const isLibraryAchievements = (doc: Document): boolean =>
       doc.querySelector(NEW_LIBRARY_SELECTOR) ? allowModernPopup : !!doc.querySelector(LIBRARY_SELECTOR);
@@ -954,7 +962,7 @@ function createAchievementTranslator() {
       } catch { /* detached window */ }
     }
     return allowModernPopup
-      ? candidates.find(doc => !isAchievementsPopup(doc) && isLibraryAchievements(doc)) || null
+      ? candidates.find(isLibraryAchievements) || null
       : candidates.find(isAchievementsPopup) || candidates.find(isLibraryAchievements) || null;
   }
   function attach(doc: Document): void {
