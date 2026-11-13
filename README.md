@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  A simple Millennium plugin that adds button to translate achievement names and descriptions into the Steam client's language.<br>
+  A simple Millennium plugin that adds a button to translate achievement names and descriptions into the Steam client's language.<br>
   Most game achievements are already translated into your language. However, some games, especially smaller indie titles (but not exclusively), don't include translations for the player's language. This plugin solves that problem.
 </p>
 
